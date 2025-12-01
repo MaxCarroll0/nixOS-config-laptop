@@ -5,27 +5,38 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
     };
+
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
-  outputs = { self, nixpkgs-unstable, nixpkgs, home-manager, sops-nix, ... } @ inputs:
+  outputs = { self, nixpkgs-unstable, nixpkgs, home-manager, sops-nix, emacs-overlay, ... } @ inputs:
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ emacs-overlay.overlay ];
+      };
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        overlays = [ emacs-overlay.overlay ];
+      };
     in {
     nixosConfigurations = {
       nixos = lib.nixosSystem {
