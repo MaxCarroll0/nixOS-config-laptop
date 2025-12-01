@@ -15,9 +15,18 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
+  boot.loader.grub.extraEntries = ''
+    menuentry "temporary ubuntu iso" {
+      insmod ext2
+      set isofile="/home/max/ubuntu.iso"
+      loopback loop (hd0,5)$isofile
+      linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile quiet noeject noprompt splash
+      initrd (loop)/casper/initrd
+    }
+    '';
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
-
+  
   sops = {
     defaultSopsFile = ./secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
@@ -73,6 +82,9 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+  # Ignore lid closing
+  services.logind.lidSwitch = "ignore";
+
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -99,6 +111,7 @@
   # Configure console keymap
   console.keyMap = "uk";
   services.xserver.layout = "uk";
+  hardware.keyboard.qmk.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.max = {
