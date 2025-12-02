@@ -20,7 +20,7 @@
 
   fileSystems."/ubuntu" =
     {
-      device = "/dev/disk/by-uuid/94cce367-519f-4002-9905-50301880ed58";
+      device = "/dev/disk/by-uuid/dbb5c694-3987-4403-a523-ace9f7d16c97";
       fsType = "ext4";
     };
 
