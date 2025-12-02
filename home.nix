@@ -38,10 +38,16 @@
 
   programs.emacs = {
     enable = true;
-    package = pkgs.emacsPgtk;
-    extraConfig = ''
-      (setq standard-indent 2)
-    '';
+    package = (pkgs.emacsWithPackagesFromUsePackage {
+      package = pkgs.emacs-pgtk;
+      config = ./emacs/config.org;
+      defaultInitFile = true;
+
+      extraEmacsPackages = epkgs: [
+        epkgs.use-package
+        epkgs.meow
+      ];
+    });
   };
 
   # This value determines the Home Manager release that your configuration is
