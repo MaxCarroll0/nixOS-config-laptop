@@ -17,9 +17,9 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.extraEntries = ''
-    menuentry "temporary ubuntu iso" {
+    menuentry "Ubuntu iso" {
       insmod ext2
-      set isofile="/home/max/ubuntu.iso"
+      set isofile="/ubuntu/ubuntu.iso"
       loopback loop (hd0,5)$isofile
       linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile quiet noeject noprompt splash
       initrd (loop)/casper/initrd
