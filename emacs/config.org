@@ -52,12 +52,19 @@ Lexical binding.
 
 #+end_src
 
+* Basic
+Line Numbers (Globally)
+#+begin_src emacs-lisp
+
+(global-display-line-numbers-mode)
+  
+#+end_src
+
 * Meow
 
 Key Bindings (QWERTY)
 
 #+begin_src emacs_lisp
-
 (defun meow-setup ()
   (meow-motion-define-key
    '("j" . meow-next)
@@ -153,6 +160,14 @@ Setup
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty))
 
 #+end_src
+* Git
+** Magit
+
+#+begin_src emacs_lisp
+
+(use-package magit)
+  
+#+end_src
 
 * Tree Sitters
 
@@ -165,6 +180,16 @@ Enable maximum highlighting
 #+end_src
 
 * Languages
+** Formatting
+Using Apheleia
+
+#+begin_src emacs_lisp
+
+(use-package 'apheleia)
+(apheleia-global-mode +1)
+ 
+#+end_src
+
 ** Nix
 #+begin_src emacs_lisp
 

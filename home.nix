@@ -1,4 +1,10 @@
-{ config, pkgs, pkgs-unstable, sops-nix, ... }:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  sops-nix,
+  ...
+}:
 
 {
   imports = [
@@ -11,7 +17,7 @@
   home.homeDirectory = "/home/max";
 
   programs.git = {
- enable = true;
+    enable = true;
     userName = "Max";
     userEmail = "mjvcarroll@gmail.com";
     extraConfig = {
@@ -38,20 +44,25 @@
 
   programs.emacs = {
     enable = true;
-    package = (pkgs.emacsWithPackagesFromUsePackage {
-      package = pkgs.emacs-pgtk;
-      config = ./emacs/config.org;
-      defaultInitFile = true;
-      alwaysEnsure = true;
-      
-      extraEmacsPackages = epkgs: with epkgs; [
-        treesit-grammars.with-all-grammars
-        use-package
-        meow
-	nixpkgs-fmt
-	nix-ts-mode
-      ];
-    });
+    package = (
+      pkgs.emacsWithPackagesFromUsePackage {
+        package = pkgs.emacs-pgtk;
+        config = ./emacs/config.org;
+        defaultInitFile = true;
+        alwaysEnsure = true;
+
+        extraEmacsPackages =
+          epkgs: with epkgs; [
+            treesit-grammars.with-all-grammars
+            use-package
+            meow
+            nixpkgs-fmt
+            apheleia
+            nix-ts-mode
+            magit
+          ];
+      }
+    );
   };
 
   # This value determines the Home Manager release that your configuration is
@@ -79,7 +90,7 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     nixfmt-rfc-style
-    nixd  
+    nixd
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
