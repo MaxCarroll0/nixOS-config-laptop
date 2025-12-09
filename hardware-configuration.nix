@@ -12,6 +12,7 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
+  boot.blacklistedKernelModules = [ "sof-audio-pci-intel-tgl" ];
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a6bb0c1c-7f82-41d7-bb74-09768c1aa4d5";
