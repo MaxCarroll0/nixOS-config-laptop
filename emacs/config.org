@@ -153,3 +153,23 @@ Setup
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty))
 
 #+end_src
+
+* LSPs
+** Nix
+Nixd LSP setup
+
+#+begin_src emacs_lisp
+
+(use-package nix-mode
+  :ensure t
+  :mode "\\.nix\\'")
+  
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'eglot-format nil t)))
+
+(with-eval-after-load 'eglot
+  (dolist (mode '((nix-mode . ("nixd"))))
+    (add-to-list 'eglot-server-programs mode)))
+
+#+end_src

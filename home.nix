@@ -61,7 +61,7 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
+  home.packages = with pkgs; [
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -74,6 +74,7 @@
     # # environment:
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
+    nixd  
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
