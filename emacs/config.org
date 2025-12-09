@@ -165,6 +165,16 @@ Enable maximum highlighting
 #+end_src
 
 * Languages
+** Formatting
+Using Apheleia
+
+#+begin_src emacs_lisp
+
+(use-package 'apheleia)
+(apheleia-global-mode +1)
+ 
+#+end_src
+
 ** Nix
 #+begin_src emacs_lisp
 
