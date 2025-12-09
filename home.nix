@@ -11,7 +11,7 @@
   home.homeDirectory = "/home/max";
 
   programs.git = {
-    enable = true;
+ enable = true;
     userName = "Max";
     userEmail = "mjvcarroll@gmail.com";
     extraConfig = {
@@ -42,12 +42,14 @@
       package = pkgs.emacs-pgtk;
       config = ./emacs/config.org;
       defaultInitFile = true;
-
+      alwaysEnsure = true;
+      
       extraEmacsPackages = epkgs: with epkgs; [
         treesit-grammars.with-all-grammars
         use-package
         meow
-        nix-ts-mode
+	nixpkgs-fmt
+	nix-ts-mode
       ];
     });
   };
@@ -76,6 +78,7 @@
     # # environment:
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
+    nixfmt-rfc-style
     nixd  
   ];
 
