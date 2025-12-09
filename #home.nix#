@@ -43,11 +43,9 @@
       config = ./emacs/config.org;
       defaultInitFile = true;
 
-      extraEmacsPackages = epkgs: with epkgs; [
-        treesit-grammars.with-all-grammars
-        use-package
-        meow
-        nix-ts-mode
+      extraEmacsPackages = epkgs: [
+        epkgs.use-package
+        epkgs.meow
       ];
     });
   };

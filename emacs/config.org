@@ -45,7 +45,7 @@ Lexical binding.
 
   ** Use-Package
 
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
 (require 'use-package)
 (setq use-package-always-ensure t)
@@ -154,22 +154,21 @@ Setup
 
 #+end_src
 
-* LSPs
-** Nix
-Nixd LSP setup
+* Tree Sitters
+
+Enable maximum highlighting
 
 #+begin_src emacs_lisp
 
-(use-package nix-mode
-  :ensure t
-  :mode "\\.nix\\'")
+(setq treesit-font-lock-level 4)
   
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook 'eglot-format nil t)))
+#+end_src
 
-(with-eval-after-load 'eglot
-  (dolist (mode '((nix-mode . ("nixd"))))
-    (add-to-list 'eglot-server-programs mode)))
+* Major Modes
+** Nix
+#+begin_src emacs_lisp
 
+(use-package nix-ts-mode
+ :mode "\\.nix\\'")
+  
 #+end_src
