@@ -1,5 +1,5 @@
 #+TITLE: Emacs Config
-#+AUTHO: Max Carroll
+#+AUTHOR: Max Carroll
 #+PROPERTY: header-args :tangle "config.el"
 
 * Basic Settings
@@ -59,6 +59,15 @@ Line Numbers (Globally)
 (global-display-line-numbers-mode)
   
 #+end_src
+
+Direnv
+#+begin_src emacs-lisp
+
+  (use-package direnv
+   :config
+   (direnv-mode))
+  
+#+end_src       
 
 * Meow
 
@@ -198,4 +207,60 @@ Using Apheleia
 (use-package nix-ts-mode
  :mode "\\.nix\\'")
   
+#+end_src
+
+** LaTeX
+Auctex:
+#+begin_src emacs-lisp
+
+  (use-package tex
+    :ensure auctex)
+    
+#+end_src
+
+Document parsing:
+#+begin_src emacs-lisp
+
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+
+#+end_src
+
+Support multi-file documents:
+#+begin_src emacs-lisp
+
+  (setq-default TeX-master nil)
+    
+#+end_src
+
+Inbuild pdf viewer
+#+begin_src emacs-lisp
+
+  (setq +latex-viewers '(pdf-tools))
+
+#+end_src
+
+** Agda
+
+Auto-load agda-mode for .agda and .lagda.md
+
+#+begin_src emacs-lisp
+
+  (setq auto-mode-alist
+     (append
+       '(("\\.agda\\'" . agda2-mode)
+         ("\\.lagda.md\\'" . agda2-mode))
+       auto-mode-alist))
+
+#+end_src
+
+Default to mononoki font
+#+begin_src emacs-lisp
+  
+  (set-face-attribute 'default nil
+                      :family "mononoki"
+                      :height 120
+                      :weight 'normal
+                      :width  'normal)
+
 #+end_src
