@@ -2,13 +2,19 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, pkgs-unstable, inputs, ... }:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.grub.enable = true;
@@ -24,10 +30,13 @@
       linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile quiet noeject noprompt splash
       initrd (loop)/casper/initrd
     }
-    '';
+  '';
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
-  
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
   sops = {
     defaultSopsFile = ./secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
@@ -38,10 +47,11 @@
       github-API = { };
     };
 
-    templates."conf-access-tokens".content = "extra-access-tokens = github.com=${config.sops.placeholder.github-API}";
+    templates."conf-access-tokens".content =
+      "extra-access-tokens = github.com=${config.sops.placeholder.github-API}";
   };
 
-  #nix.extraOptions = "!include ${config.sops.templates."conf-access-tokens".path}";  # Why cant this find the file???
+  #nix.extraOptions = "!include ${config.sops.templates."conf-access-tokens".path}"; # Why cant this find the file???
   nix.extraOptions = (builtins.readFile config.sops.templates."conf-access-tokens".path);
 
   # Auto-update system.
@@ -117,14 +127,18 @@
   users.users.max = {
     isNormalUser = true;
     description = "Max Carroll";
-    extraGroups = [ "networkmanager" "wheel" "keys" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "keys"
+    ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
-  nixpkgs.config.allowUnfree = true; 
+  nixpkgs.config.allowUnfree = true;
 
   # Install firefox.
   programs.firefox.enable = true;
@@ -136,8 +150,8 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
     git
     vscode
     wayland-utils

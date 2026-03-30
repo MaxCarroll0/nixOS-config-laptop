@@ -42,8 +42,8 @@
       nixos = lib.nixosSystem {
         inherit system;
         modules = [
-          ./configuration.nix
           sops-nix.nixosModules.sops
+          ./configuration.nix
         ];
         specialArgs = {
           inherit nixpkgs-unstable;
