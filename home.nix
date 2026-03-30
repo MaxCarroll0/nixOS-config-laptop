@@ -60,6 +60,7 @@
             apheleia
             nix-ts-mode
             magit
+            agda2-mode
           ];
       }
     );
@@ -93,6 +94,8 @@
     nixd
     isabelle
     lean4
+    agda
+    ghostscript
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
