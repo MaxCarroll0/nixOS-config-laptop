@@ -91,6 +91,8 @@
     #   echo "Hello, ${config.home.username}!"
     nixfmt-rfc-style
     nixd
+    isabelle
+    lean4
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
