@@ -297,7 +297,7 @@ Using Apheleia
 #+end_src
 
 ** LSP
-#+being_src emacs_lisp
+#+begin_src emacs_lisp
 Activate automatically
 (use-package eglot
   :hook
