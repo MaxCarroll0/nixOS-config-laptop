@@ -29,6 +29,24 @@ Lexical binding.
 
    #+end_src
 
+
+** Emacs
+
+#+begin_src emacs_lisp
+  
+(use-package emacs
+  :custom
+  ;; Enable indentation+completion using the TAB key.
+  (tab-always-indent 'complete)
+
+  ;; Disable Ispell completion function.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+  
+#+end_src
+
 * Packages
 
 ** Archives
@@ -178,6 +196,85 @@ Setup
   
 #+end_src
 
+* Autocompletion etc.
+** Corfu
+Autocompletion. With history sorting and documentation popups.
+#+begin_src emacs_lisp
+
+(use-package corfu
+  :custom
+  (corfu-auto t) 
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match 'insert) ;; Configure handling of exact matches
+
+  ;; Enable Corfu only for certain modes. See also `global-corfu-modes'.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  (corfu-popupinfo-mode)
+  )
+
+#+end_src
+
+** Minibuffer
+
+*** Corfu
+#+begin_src emacs_lisp
+
+(setq global-corfu-minibuffer
+      (lambda ()
+        (not (or (bound-and-true-p mct--active)
+                 (bound-and-true-p vertico--input)
+                 (eq (current-local-map) read-passwd-map)))))
+  
+#+end_src
+
+*** Vertico
+#+begin_src emacs_lisp
+
+(use-package vertico
+  :init
+  (vertico-mode))
+  
+#+end_src
+
+** Orderless
+Orderless with Corfu
+
+#+begin_src emacs_lisp
+
+(use-package orderless
+  :custom
+  ;; (orderless-style-dispatchers '(orderless-affix-dispatch))
+  ;; (orderless-component-separator #'orderless-escapable-split-on-space)
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-defaults nil) ;; Disable defaults, use our settings
+  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+
+#+end_src
+
+** Cape
+#+begin_src emacs_lisp
+
+(use-package cape
+  :after corfu
+  :init
+  ;; General CAPFs for most buffers
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file))
+  
+#+end_src
+* Citations
+Citar etc. TODO
 * Tree Sitters
 
 Enable maximum highlighting
@@ -199,6 +296,21 @@ Using Apheleia
  
 #+end_src
 
+** LSP
+#+being_src emacs_lisp
+Activate automatically
+(use-package eglot
+  :hook
+  ;; All programming languages
+  (prog-mode . eglot-ensure)
+  ;; LaTeX / TeX
+  ((LaTeX-mode latex-mode tex-mode) . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '((tex-mode plain-tex-mode latex-mode LaTeX-mode)
+                 "digestif")))
+#+end_src
+
 ** Nix
 #+begin_src emacs_lisp
 
@@ -213,11 +325,14 @@ Using Apheleia
 Auctex:
 #+begin_src emacs-lisp
 
-  (use-package tex
-    :ensure auctex)
-    
-#+end_src
+    (use-package tex
+      :ensure auctex
+      :hook ((LaTeX-mode . TeX-fold-mode)          
+             (LaTeX-mode . prettify-symbols-mode)  
+             (LaTeX-mode . turn-on-cdlatex))       
+      :defer t)
 
+#+end_src
 Document parsing:
 #+begin_src emacs-lisp
 
@@ -239,6 +354,66 @@ Inbuild pdf viewer
   (setq +latex-viewers '(pdf-tools))
 
 #+end_src
+*** cdLatex
+#+begin_src emacs_lisp
+
+(use-package cdlatex
+  :hook ((LaTeX-mode . turn-on-cdlatex)
+         (org-mode   . turn-on-org-cdlatex)))
+  
+#+end_src
+
+*** Company Auctex -> Capf
+#+begin_src emacs_lisp
+
+(use-package company-auctex
+      :after tex
+      :commands company-auctex-macros
+                company-auctex-symbols
+                company-auctex-environments)
+
+    (defun my/latex-capf-setup ()
+      "CAPF setup for LaTeX."
+      (setq-local completion-at-point-functions
+                  (list
+                   ;; LSP completion from Eglot/Digestif
+                   #'eglot-completion-at-point
+                   ;; AUCTeX's own completion first
+                   #'TeX-completion-at-point
+                   ;; Reuse company-auctex backends through cape
+                   (cape-company-to-capf #'company-auctex-macros)
+                   (cape-company-to-capf #'company-auctex-symbols)
+                   (cape-company-to-capf #'company-auctex-environments)
+                   ;; Generic fallbacks
+                   #'cape-file
+                   #'cape-dabbrev)))
+
+    (add-hook 'LaTeX-mode-hook #'my/latex-capf-setup)
+  
+#+end_src
+
+*** Xenops
+Reveal code upon cursor entry.
+#+begin_src emacs_lisp
+    (use-package xenops
+      :ensure t
+      :hook (LaTeX-mode . xenops-mode)
+      :config
+      (setq xenops-reveal-on-entry t))             ; Reveal LaTeX source on cursor
+#+end_src
+
+*** Digestif LSP
+
+*** YASnippet
+#+begin_src emacs_lisp
+
+(use-package yasnippet
+  :hook ((LaTeX-mode . yas-minor-mode)
+         (latex-mode . yas-minor-mode)
+         (tex-mode   . yas-minor-mode)))
+  
+#+end_src
+
 
 ** Agda
 
