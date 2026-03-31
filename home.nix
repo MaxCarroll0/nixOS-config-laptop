@@ -67,6 +67,8 @@
             orderless
             corfu
             cape
+            xenops
+            cdlatex
           ];
       }
     );
