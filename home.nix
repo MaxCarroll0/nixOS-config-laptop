@@ -61,6 +61,12 @@
             nix-ts-mode
             magit
             agda2-mode
+            direnv
+            auctex
+            vertico
+            orderless
+            corfu
+            cape
           ];
       }
     );
