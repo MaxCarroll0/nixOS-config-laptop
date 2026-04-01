@@ -193,7 +193,26 @@ Setup
 #+begin_src emacs-lisp
 
 (use-package magit)
-  
+
+#+end_src
+
+* Terminal
+** Vterm
+
+#+begin_src emacs-lisp
+
+(use-package vterm)
+
+#+end_src
+
+* AI
+** Claude Code
+
+#+begin_src emacs-lisp
+
+(use-package claude-code
+  :after vterm)
+
 #+end_src
 
 * Autocompletion etc.
@@ -413,7 +432,6 @@ Reveal code upon cursor entry.
          (tex-mode   . yas-minor-mode)))
   
 #+end_src
-
 
 ** Agda
 

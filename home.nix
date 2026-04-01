@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   pkgs-unstable,
   sops-nix,
@@ -69,6 +70,8 @@
             cape
             xenops
             cdlatex
+            vterm
+            claude-code
           ];
       }
     );
@@ -122,6 +125,7 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
   };
 
   # Home Manager can also manage your environment variables through
@@ -143,6 +147,13 @@
   home.sessionVariables = {
     EDITOR = "emacs";
   };
+
+  # Declaratively configure Claude Code MCP servers
+  # Hacky: This merges into ~/.claude.json without overwriting other settings
+  home.activation.claudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.claude-code}/bin/claude mcp add-json emacs '{"type": "stdio", "command": "claude-code-mcp"}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json nixos '{"command": "mcp-nixos", "args": []}' -s user 2>/dev/null || true
+  '';
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
