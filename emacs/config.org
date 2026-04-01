@@ -32,7 +32,7 @@ Lexical binding.
 
 ** Emacs
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
   
 (use-package emacs
   :custom
@@ -91,7 +91,7 @@ Direnv
 
 Key Bindings (QWERTY)
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 (defun meow-setup ()
   (meow-motion-define-key
    '("j" . meow-next)
@@ -178,7 +178,7 @@ Key Bindings (QWERTY)
 
 Setup
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package meow
   :config
@@ -190,7 +190,7 @@ Setup
 * Git
 ** Magit
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package magit)
   
@@ -199,7 +199,7 @@ Setup
 * Autocompletion etc.
 ** Corfu
 Autocompletion. With history sorting and documentation popups.
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package corfu
   :custom
@@ -227,7 +227,7 @@ Autocompletion. With history sorting and documentation popups.
 ** Minibuffer
 
 *** Corfu
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (setq global-corfu-minibuffer
       (lambda ()
@@ -238,7 +238,7 @@ Autocompletion. With history sorting and documentation popups.
 #+end_src
 
 *** Vertico
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package vertico
   :init
@@ -249,7 +249,7 @@ Autocompletion. With history sorting and documentation popups.
 ** Orderless
 Orderless with Corfu
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package orderless
   :custom
@@ -263,7 +263,7 @@ Orderless with Corfu
 #+end_src
 
 ** Cape
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package cape
   :after corfu
@@ -279,7 +279,7 @@ Citar etc. TODO
 
 Enable maximum highlighting
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (setq treesit-font-lock-level 4)
   
@@ -289,7 +289,7 @@ Enable maximum highlighting
 ** Formatting
 Using Apheleia
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package 'apheleia)
 (apheleia-global-mode +1)
@@ -298,7 +298,7 @@ Using Apheleia
 
 ** LSP
 Activate eglot automatically
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 (use-package eglot
   :hook
   ;; All programming languages
@@ -312,7 +312,7 @@ Activate eglot automatically
 #+end_src
 
 ** Nix
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package nixpkgs-fmt)
   
@@ -355,7 +355,7 @@ Inbuild pdf viewer
 
 #+end_src
 *** cdLatex
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package cdlatex
   :hook ((LaTeX-mode . turn-on-cdlatex)
@@ -364,7 +364,7 @@ Inbuild pdf viewer
 #+end_src
 
 *** Company Auctex -> Capf
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package company-auctex
       :after tex
@@ -394,7 +394,7 @@ Inbuild pdf viewer
 
 *** Xenops
 Reveal code upon cursor entry.
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
     (use-package xenops
       :ensure t
       :hook (LaTeX-mode . xenops-mode)
@@ -405,7 +405,7 @@ Reveal code upon cursor entry.
 *** Digestif LSP
 
 *** YASnippet
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 
 (use-package yasnippet
   :hook ((LaTeX-mode . yas-minor-mode)
