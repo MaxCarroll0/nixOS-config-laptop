@@ -100,6 +100,7 @@
     #   echo "Hello, ${config.home.username}!"
     nixfmt-rfc-style
     nixd
+    # TODO: remove isabelle, lean4, agda. Add instead on per-project level
     isabelle
     lean4
     agda
