@@ -3,11 +3,11 @@
   description = "Flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -32,6 +32,9 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [ emacs-overlay.overlay ];
+        config = {
+          allowUnfree = true;
+        };
       };
       pkgs-unstable = import nixpkgs-unstable {
         inherit system;
@@ -46,7 +49,7 @@
           ./configuration.nix
         ];
         specialArgs = {
-          inherit nixpkgs-unstable;
+          inherit pkgs-unstable;
           inherit inputs;
         };
       };

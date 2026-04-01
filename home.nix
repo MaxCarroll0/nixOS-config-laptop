@@ -104,6 +104,8 @@
     lean4
     agda
     ghostscript
+    claude-code
+    mcp-nixos
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
