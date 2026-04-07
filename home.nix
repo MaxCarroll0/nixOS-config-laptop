@@ -17,6 +17,8 @@
   home.username = "max";
   home.homeDirectory = "/home/max";
 
+  fonts.fontconfig.enable = true;
+
   programs.git = {
     enable = true;
     userName = "Max";
@@ -110,6 +112,10 @@
     ghostscript
     claude-code
     mcp-nixos
+
+    # Fonts
+    nerd-fonts.fira-code
+    nerd-fonts.mononoki
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
