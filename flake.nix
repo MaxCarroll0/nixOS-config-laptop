@@ -23,9 +23,22 @@
     };
 
     emacs-overlay.url = "github:nix-community/emacs-overlay";
+
+    agda-mcp = {
+      url = "github:faezs/agda-mcp";
+    };
   };
 
-  outputs = { self, nixpkgs-unstable, nixpkgs, home-manager, sops-nix, emacs-overlay, ... } @ inputs:
+  outputs =
+    {
+      self,
+      nixpkgs-unstable,
+      nixpkgs,
+      home-manager,
+      sops-nix,
+      emacs-overlay,
+      ...
+    }@inputs:
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
@@ -34,37 +47,45 @@
         overlays = [ emacs-overlay.overlay ];
         config = {
           allowUnfree = true;
+          permittedInsecurePackages = [
+            "python3.13-pypdf2-3.0.1"
+          ];
         };
       };
       pkgs-unstable = import nixpkgs-unstable {
         inherit system;
         overlays = [ emacs-overlay.overlay ];
       };
-    in {
-    nixosConfigurations = {
-      nixos = lib.nixosSystem {
-        inherit system;
-        modules = [
-          sops-nix.nixosModules.sops
-          ./configuration.nix
-        ];
-        specialArgs = {
-          inherit pkgs-unstable;
-          inherit inputs;
-        };
-      };
-    };
-    homeConfigurations = {
-      max = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [
-          ./home.nix
+    in
+    {
+      nixosConfigurations = {
+        nixos = lib.nixosSystem {
+          inherit system;
+          modules = [
+            sops-nix.nixosModules.sops
+            ./configuration.nix
           ];
-        extraSpecialArgs = {
-          inherit pkgs-unstable;
+          specialArgs = {
+            inherit pkgs-unstable;
+            inherit inputs;
+          };
+        };
+      };
+      homeConfigurations = {
+        max = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            ./home.nix
+          ];
+          extraSpecialArgs = {
+            inherit pkgs-unstable;
+            agda-mcp = inputs.agda-mcp.packages.${system}.agda-mcp.overrideAttrs (old: {
+              enableParallelBuilding = false;
+              NIX_BUILD_CORES = 1;
+            });
+          };
         };
       };
     };
-  };
 
 }

@@ -3,10 +3,74 @@
   lib,
   pkgs,
   pkgs-unstable,
+  agda-mcp,
   sops-nix,
   ...
 }:
 
+let
+  arxiv-to-prompt = pkgs.python3Packages.buildPythonPackage {
+    pname = "arxiv-to-prompt";
+    version = "0.10.0";
+    pyproject = true;
+    src = pkgs.fetchFromGitHub {
+      owner = "takashiishida";
+      repo = "arxiv-to-prompt";
+      rev = "d77d75e310c0ea1208e36a63ae1d353c23a13ab0";
+      hash = "sha256-+p9rZ2dxiGfb1quI5kmDuYgbbQKEYjuWINvpOUN2mZw=";
+    };
+    build-system = [ pkgs.python3Packages.setuptools ];
+    dependencies = with pkgs.python3Packages; [
+      requests
+      filelock
+      pyperclip
+    ];
+    doCheck = false;
+  };
+
+  arxiv-latex-mcp = pkgs.python3Packages.buildPythonApplication {
+    pname = "arxiv-latex-mcp";
+    version = "0.2.2";
+    pyproject = true;
+    src = pkgs.fetchFromGitHub {
+      owner = "takashiishida";
+      repo = "arxiv-latex-mcp";
+      rev = "ac82f2662fb9d67e42ce19bd8c5b56b478235c5a";
+      hash = "sha256-jzczDWUCwNLjSLHSA/xrx6B65bXzd1BNZcXFgzJZy+k=";
+    };
+    build-system = [ pkgs.python3Packages.setuptools ];
+    dependencies = with pkgs.python3Packages; [
+      httpx
+      mcp
+      arxiv-to-prompt
+    ];
+    doCheck = false;
+  };
+
+  paper-search-mcp = pkgs.python3Packages.buildPythonApplication {
+    pname = "paper-search-mcp";
+    version = "0.1.4";
+    pyproject = true;
+    src = pkgs.fetchFromGitHub {
+      owner = "openags";
+      repo = "paper-search-mcp";
+      rev = "6d1f7ef5bcb7cfa5905d50c42fd7b8a4c1c16afd";
+      hash = "sha256-P7PFynx+BZ/LuxXRjkuWhlqiYVm1+3UugFin3Qu7rmM=";
+    };
+    build-system = [ pkgs.python3Packages.hatchling ];
+    dependencies = with pkgs.python3Packages; [
+      requests
+      feedparser
+      fastmcp
+      mcp
+      pypdf2
+      beautifulsoup4
+      lxml
+      httpx
+    ];
+    doCheck = false;
+  };
+in
 {
   imports = [
     ./hyprland.nix
@@ -104,7 +168,6 @@
             xenops
             cdlatex
             vterm
-            claude-code
             claude-code-ide
             claude-code-ide-mcp-tools
           ];
@@ -123,7 +186,15 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = with pkgs; [
+  home.packages = [
+    agda-mcp
+    arxiv-latex-mcp
+    paper-search-mcp
+    pkgs-unstable.context7-mcp
+    (lib.meta.setPrio 5 pkgs-unstable.mcp-server-sequential-thinking)
+    (lib.meta.setPrio 6 pkgs-unstable.mcp-server-memory) # Note (conflict)
+  ]
+  ++ (with pkgs; [
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -149,7 +220,7 @@
     # Fonts
     nerd-fonts.fira-code
     nerd-fonts.mononoki
-  ];
+  ]);
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -187,13 +258,23 @@
     EDITOR = "emacs";
   };
 
-  # Declaratively configure Claude Code MCP servers
-  # Hacky: This merges into ~/.claude.json without overwriting other settings
-  # Note: emacs MCP is auto-configured by claude-code-ide.el when launching via M-x claude-code-ide
+  # Hacky declarative configuration of Claude
+  # Merges into ~/.claude.json
+  # emacs-tools MCP is auto-configured by claude-code-ide.el at runtime
   home.activation.claudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${pkgs.claude-code}/bin/claude mcp add-json nixos '{"command": "mcp-nixos", "args": []}' -s user 2>/dev/null || true
     _claude="$HOME/.claude.json"
     [ -f "$_claude" ] || echo '{}' > "$_claude"
+
+    # Register MCP servers
+    ${pkgs.claude-code}/bin/claude mcp add-json nixos '{"command": "mcp-nixos", "args": []}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json context7 '{"command": "context7-mcp", "args": []}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json sequential-thinking '{"command": "mcp-server-sequential-thinking", "args": []}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json memory '{"command": "mcp-server-memory", "args": []}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json agda '{"url": "http://localhost:3000/mcp"}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json arxiv-latex '{"command": "arxiv-latex-mcp", "args": []}' -s user 2>/dev/null || true
+    ${pkgs.claude-code}/bin/claude mcp add-json paper-search '{"command": "paper-search-mcp", "args": []}' -s user 2>/dev/null || true
+
+    # Merge global settings
     ${pkgs.jq}/bin/jq '. * {"model":"sonnet","env":{"MAX_THINKING_TOKENS":"10000","CLAUDE_AUTOCOMPACT_PCT_OVERRIDE":"50","CLAUDE_CODE_SUBAGENT_MODEL":"haiku"}}' "$_claude" > "$_claude.tmp" && mv "$_claude.tmp" "$_claude"
   '';
 
