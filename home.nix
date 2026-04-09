@@ -265,17 +265,19 @@ in
     _claude="$HOME/.claude.json"
     [ -f "$_claude" ] || echo '{}' > "$_claude"
 
-    # Register MCP servers
-    ${pkgs.claude-code}/bin/claude mcp add-json nixos '{"command": "mcp-nixos", "args": []}' -s user 2>/dev/null || true
-    ${pkgs.claude-code}/bin/claude mcp add-json context7 '{"command": "context7-mcp", "args": []}' -s user 2>/dev/null || true
-    ${pkgs.claude-code}/bin/claude mcp add-json sequential-thinking '{"command": "mcp-server-sequential-thinking", "args": []}' -s user 2>/dev/null || true
-    ${pkgs.claude-code}/bin/claude mcp add-json memory '{"command": "mcp-server-memory", "args": []}' -s user 2>/dev/null || true
-    ${pkgs.claude-code}/bin/claude mcp add-json agda '{"url": "http://localhost:3000/mcp"}' -s user 2>/dev/null || true
-    ${pkgs.claude-code}/bin/claude mcp add-json arxiv-latex '{"command": "arxiv-latex-mcp", "args": []}' -s user 2>/dev/null || true
-    ${pkgs.claude-code}/bin/claude mcp add-json paper-search '{"command": "paper-search-mcp", "args": []}' -s user 2>/dev/null || true
-
-    # Merge global settings
-    ${pkgs.jq}/bin/jq '. * {"model":"sonnet","env":{"MAX_THINKING_TOKENS":"10000","CLAUDE_AUTOCOMPACT_PCT_OVERRIDE":"50","CLAUDE_CODE_SUBAGENT_MODEL":"haiku"}}' "$_claude" > "$_claude.tmp" && mv "$_claude.tmp" "$_claude"
+    # Declaratively set MCP servers and global settings (overwrites mcpServers entirely)
+    ${pkgs.jq}/bin/jq '
+      . * {"model": "sonnet", "env": {"MAX_THINKING_TOKENS": "10000", "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50", "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"}}
+      | .mcpServers = {
+          "nixos": {"command": "mcp-nixos", "args": []},
+          "context7": {"command": "context7-mcp", "args": []},
+          "sequential-thinking": {"command": "mcp-server-sequential-thinking", "args": []},
+          "memory": {"command": "mcp-server-memory", "args": []},
+          "agda": {"type": "http", "url": "http://localhost:3000/mcp"},
+          "arxiv-latex": {"command": "arxiv-latex-mcp", "args": []},
+          "paper-search": {"command": "paper-search-mcp", "args": []}
+        }
+    ' "$_claude" > "$_claude.tmp" && mv "$_claude.tmp" "$_claude"
   '';
 
   # Let Home Manager install and manage itself.
