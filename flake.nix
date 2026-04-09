@@ -82,6 +82,7 @@
             agda-mcp = inputs.agda-mcp.packages.${system}.agda-mcp.overrideAttrs (old: {
               enableParallelBuilding = false;
               NIX_BUILD_CORES = 1;
+              doCheck = false;
             });
           };
         };
