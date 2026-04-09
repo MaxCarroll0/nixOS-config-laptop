@@ -52,7 +52,7 @@ Mononoki for programming
 #+begin_src emacs-lisp
 (defun my/set-code-font ()
   (setq buffer-face-mode-face
-        '(:family "Mononoki Nerd Font Mono" :height 110))
+        '(:family "FiraCode Nerd Font Mono" :height 110))
   (buffer-face-mode 1))
 
 (add-hook 'prog-mode-hook #'my/set-code-font)
