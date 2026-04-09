@@ -226,6 +226,27 @@ Setup
 
 #+end_src
 
+** Claude Code IDE
+MCP integration
+=M-x claude-code-ide=.
+
+#+begin_src emacs-lisp
+
+(use-package claude-code-ide
+  :after vterm
+  :bind ("C-c c" . claude-code-ide-menu)
+  :init
+  (setq claude-code-ide-enable-mcp-server t)
+  :config
+  (claude-code-ide-emacs-tools-setup))
+
+(use-package claude-code-ide-mcp-tools
+  :after claude-code-ide
+  :config
+  (claude-code-ide-mcp-tools-setup))
+
+#+end_src
+
 * Autocompletion etc.
 ** Corfu
 Autocompletion. With history sorting and documentation popups.

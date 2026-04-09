@@ -55,7 +55,38 @@
         alwaysEnsure = true;
 
         extraEmacsPackages =
-          epkgs: with epkgs; [
+          epkgs:
+          let
+            claude-code-ide = epkgs.trivialBuild {
+              pname = "claude-code-ide";
+              version = "unstable";
+              src = pkgs.fetchFromGitHub {
+                owner = "manzaltu";
+                repo = "claude-code-ide.el";
+                rev = "56db02ee386d009ddb8b1482310f1f9beeefb810";
+                hash = "sha256-qH1QnG5G+0UiH/v0KaS7oSpQZY+BkUMZvrjbx6kyFhg=";
+              };
+              packageRequires = with epkgs; [
+                websocket
+                web-server
+                transient
+              ];
+              postPatch = "rm -f claude-code-ide-tests.el";
+            };
+            claude-code-ide-mcp-tools = epkgs.trivialBuild {
+              pname = "claude-code-ide-mcp-tools";
+              version = "unstable";
+              src = pkgs.fetchFromGitHub {
+                owner = "Kaylebor";
+                repo = "claude-code-ide-mcp-tools";
+                rev = "9e74701482f44090aab80f45e6e7eabce5208bd4";
+                hash = "sha256-rvju/JSdsCIGZakdkQTlERi943gXDp8pKmFEAIHZHdU=";
+              };
+              packageRequires = [ claude-code-ide ];
+            };
+          in
+          with epkgs;
+          [
             treesit-grammars.with-all-grammars
             use-package
             meow
@@ -74,6 +105,8 @@
             cdlatex
             vterm
             claude-code
+            claude-code-ide
+            claude-code-ide-mcp-tools
           ];
       }
     );
@@ -156,9 +189,12 @@
 
   # Declaratively configure Claude Code MCP servers
   # Hacky: This merges into ~/.claude.json without overwriting other settings
+  # Note: emacs MCP is auto-configured by claude-code-ide.el when launching via M-x claude-code-ide
   home.activation.claudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${pkgs.claude-code}/bin/claude mcp add-json emacs '{"type": "stdio", "command": "claude-code-mcp"}' -s user 2>/dev/null || true
     ${pkgs.claude-code}/bin/claude mcp add-json nixos '{"command": "mcp-nixos", "args": []}' -s user 2>/dev/null || true
+    _claude="$HOME/.claude.json"
+    [ -f "$_claude" ] || echo '{}' > "$_claude"
+    ${pkgs.jq}/bin/jq '. * {"model":"sonnet","env":{"MAX_THINKING_TOKENS":"10000","CLAUDE_AUTOCOMPACT_PCT_OVERRIDE":"50","CLAUDE_CODE_SUBAGENT_MODEL":"haiku"}}' "$_claude" > "$_claude.tmp" && mv "$_claude.tmp" "$_claude"
   '';
 
   # Let Home Manager install and manage itself.
