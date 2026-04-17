@@ -195,7 +195,8 @@ Setup
   :config
   (meow-setup)
   (meow-global-mode 1)
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty))
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (add-hook 'ediff-mode-hook #'meow-motion-mode))
 
 #+end_src
 * Git
@@ -221,9 +222,17 @@ Setup
           (unless vterm-copy-mode
             (vterm-copy-mode 1))
         (when vterm-copy-mode
-          (vterm-copy-mode -1)))))
+          (vterm-copy-mode -1)
+          (vterm-reset-cursor-point)))))
+  (defun my/vterm-redraw-on-focus ()
+    "Send C-l to redraw vterm when switching back to it."
+    (when (and (derived-mode-p 'vterm-mode)
+              (not vterm-copy-mode))
+      (vterm-send-key "l" nil nil nil :ctrl)))
   (add-hook 'meow-normal-mode-hook #'my/vterm-meow-mode-sync)
-  (add-hook 'meow-insert-mode-hook #'my/vterm-meow-mode-sync))
+  (add-hook 'meow-insert-mode-hook #'my/vterm-meow-mode-sync)
+  (add-hook 'window-buffer-change-functions
+            (lambda (_) (my/vterm-redraw-on-focus))))
 
 #+end_src
 
