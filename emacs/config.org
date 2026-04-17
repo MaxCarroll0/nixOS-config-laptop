@@ -212,7 +212,18 @@ Setup
 
 #+begin_src emacs-lisp
 
-(use-package vterm)
+(use-package vterm
+  :config
+  (defun my/vterm-meow-mode-sync ()
+    "Sync vterm copy mode with meow normal/insert state."
+    (when (derived-mode-p 'vterm-mode)
+      (if (meow-normal-mode-p)
+          (unless vterm-copy-mode
+            (vterm-copy-mode 1))
+        (when vterm-copy-mode
+          (vterm-copy-mode -1)))))
+  (add-hook 'meow-normal-mode-hook #'my/vterm-meow-mode-sync)
+  (add-hook 'meow-insert-mode-hook #'my/vterm-meow-mode-sync))
 
 #+end_src
 
