@@ -85,7 +85,7 @@
           ];
           extraSpecialArgs = {
             inherit pkgs-unstable;
-            inherit curd;
+            curd = curd.packages.${system}.default;
             agda-mcp = inputs.agda-mcp.packages.${system}.agda-mcp.overrideAttrs (old: {
               doCheck = false;
             });
