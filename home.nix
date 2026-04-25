@@ -231,7 +231,10 @@ in
   # plain files is through 'home.file'.
   home.file = { };
 
-  xdg.configFile."curd/curd.conf".source = ./curd.conf;
+  xdg.configFile."curd/curd.conf" = {
+    source = ./curd.conf;
+    force = true;
+  };
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
