@@ -4,6 +4,7 @@
   pkgs,
   pkgs-unstable,
   agda-mcp,
+  curd,
   sops-nix,
   ...
 }:
@@ -187,6 +188,7 @@ in
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = [
+    curd
     agda-mcp
     arxiv-latex-mcp
     paper-search-mcp

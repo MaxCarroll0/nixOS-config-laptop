@@ -27,6 +27,11 @@
     agda-mcp = {
       url = "github:faezs/agda-mcp";
     };
+
+    curd = {
+      url = "github:Wraient/curd";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -36,6 +41,7 @@
       nixpkgs,
       home-manager,
       sops-nix,
+      curd,
       emacs-overlay,
       ...
     }@inputs:
@@ -79,6 +85,7 @@
           ];
           extraSpecialArgs = {
             inherit pkgs-unstable;
+            inherit curd;
             agda-mcp = inputs.agda-mcp.packages.${system}.agda-mcp.overrideAttrs (old: {
               doCheck = false;
             });
