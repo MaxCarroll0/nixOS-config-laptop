@@ -106,6 +106,7 @@ in
     enable = true;
 
     bashrcExtra = ''
+      set -o vi
       eval "$(direnv hook bash)"
     '';
   };
